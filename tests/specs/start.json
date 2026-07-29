@@ -7,7 +7,7 @@
         "expect": [
           {
             "method": "sendMessage",
-            "payload": { "text": "👋 Welcome! Tap a button below to get started." }
+            "payload": { "text": "Find legal ways to watch a movie or series. Send a title, or choose an option below." }
           }
         ]
       }

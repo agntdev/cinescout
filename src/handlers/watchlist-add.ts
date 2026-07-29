@@ -1,17 +1,24 @@
 import { Composer } from "grammy";
+import type { Ctx } from "../bot.js";
+import { addWatchlist, claimOrCheckOwner } from "../movie/store.js";
 
-// SCAFFOLD — generated from the bot blueprint BEFORE the agent runs.
-// Keep a LIVE registration (.command / .callbackQuery / …) so this feature is
-// never an empty stub. Replace the reply body with real logic + copy; if you
-// change the user-facing text, update tests/specs to match EXACTLY.
-// Do NOT rewrite src/bot.ts — buildBot() already auto-loads this module.
-// Menu: wire this into /start via registerMainMenuItem({ label: "Add to watchlist", data: "watchlist:add" }) if the toolkit exposes it.
-
-const composer = new Composer();
+const composer = new Composer<Ctx>();
 
 composer.callbackQuery("watchlist:add", async (ctx) => {
   await ctx.answerCallbackQuery();
-  await ctx.reply("Add current title to persistent watchlist");
+  if (await claimOrCheckOwner(ctx) !== "owner") {
+    await ctx.reply("This private bot is available only to its owner.");
+    return;
+  }
+  const current = ctx.session.currentMatch;
+  if (!current) {
+    await ctx.reply("Choose a title first, then you can add it to your watchlist.");
+    return;
+  }
+  const result = await addWatchlist(ctx, current);
+  if (result === "added") await ctx.reply(`Added ${current.title} to your watchlist.`);
+  else if (result === "exists") await ctx.reply(`${current.title} is already in your watchlist.`);
+  else await ctx.reply("Your watchlist storage isn't set up yet.");
 });
 
 export default composer;
