@@ -144,6 +144,24 @@ export class ChatDO {
       }
     }
 
+    // Durable domain records. Feature data intentionally lives separately from
+    // the grammY session: sessions are disposable conversation state, while
+    // these named records survive restarts and are addressed directly (never by
+    // scanning a keyspace).
+    if (url.pathname === "/record") {
+      const key = url.searchParams.get("key");
+      if (!key) return new Response("missing key", { status: 400 });
+      const recordKey = "record:" + key;
+      if (request.method === "GET") {
+        const value = await this.state.storage.get<unknown>(recordKey);
+        return value === undefined ? new Response(null, { status: 204 }) : Response.json(value);
+      }
+      if (request.method === "PUT") {
+        await this.state.storage.put(recordKey, await request.json());
+        return new Response(null, { status: 204 });
+      }
+    }
+
     // Schedule a reminder + (re)arm the alarm to the earliest due one.
     if (url.pathname === "/remind" && request.method === "POST") {
       const rem = (await request.json()) as Reminder;

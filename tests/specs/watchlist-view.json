@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Display all items in personal watchlist"
+              "text": "This private bot is available only to its owner."
             }
           }
         ],

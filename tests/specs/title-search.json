@@ -1,0 +1,16 @@
+[
+  {
+    "name": "title search reports missing metadata configuration safely",
+    "steps": [
+      {
+        "send": { "text": "The Third Man" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": { "text": "Sorry, I didn't understand that. Try /help." }
+          }
+        ]
+      }
+    ]
+  }
+]
